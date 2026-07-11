@@ -18,9 +18,19 @@ const userSchema=new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    profilePhoto: {
+        type: String
+    },
+    profilePdf: {
+        type: String
+    },
+    profileVideo: {
+        type: String
     }
 }, {timestamps: true});
 
 const User=mongoose.model("users", userSchema);
 // exporting
 module.exports=User;
+

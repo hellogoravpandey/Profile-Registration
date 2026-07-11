@@ -1,6 +1,7 @@
 const validator = require("validator");
 
 function validateUser(req, res, next) {
+    console.log("from the validateUser", req.files);
     const { firstName, lastName, email, password } = req.body;
 
     // First Name
@@ -67,6 +68,8 @@ function validateUser(req, res, next) {
     });
 }
 
+ // file validation 
+   
     // Normalize values before the controller uses them
     req.body.firstName = firstName.trim();
     req.body.lastName = lastName ? lastName.trim() : "";
@@ -75,4 +78,48 @@ function validateUser(req, res, next) {
     next();
 }
 
-module.exports ={validateUser};
+
+
+//uploaded file validator
+function validateUploadedFiles(req, res, next) {
+
+    const files = req.files;
+
+    // Profile Image
+    if (files.profileImage) {
+        const profile = files.profileImage[0];
+
+        if (profile.size > 2 * 1024 * 1024) {
+            return res.status(400).json({
+                message: "Profile image must be less than 2 MB."
+            });
+        }
+    }
+
+    // Resume
+    if (files.resume) {
+        const resume = files.resume[0];
+
+        if (resume.size > 5 * 1024 * 1024) {
+            return res.status(400).json({
+                message: "Resume must be less than 5 MB."
+            });
+        }
+    }
+
+    // Aadhaar
+    if (files.aadhaar) {
+        const aadhaar = files.aadhaar[0];
+
+        if (aadhaar.size > 3 * 1024 * 1024) {
+            return res.status(400).json({
+                message: "Aadhaar must be less than 3 MB."
+            });
+        }
+    }
+
+    next();
+}
+
+
+module.exports ={validateUser, validateUploadedFiles};

@@ -8,12 +8,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index"
+    "start": "node index"
   },
   "dependencies": {
+    "cloudinary": "^2.10.0",
     "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
     "express": "^5.2.1",
     "mongoose": "^9.7.4",
+    "multer": "^2.2.0",
     "nodemon": "^3.1.14",
     "validator": "^13.15.35"
   }
