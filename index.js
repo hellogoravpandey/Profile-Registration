@@ -1,10 +1,11 @@
 require("dotenv").config();
 const express=require("express");
+const path=require("path");
 const {connectToMongoDB}=require("./connection");
 const userRoutes=require("./routes/user.routes");
-const staticRoutes=require("./routes/staticRoute.routes");
-const path=require("path");
-const { validateUser } = require("./middlewares/user.middlewares");
+const staticRoutes=require("./routes/staticRoute.routes")
+const {validateUser} = require("./middlewares/user.middlewares");
+const { respondError } = require("./middlewares/errorHandler.middlewares");
 const app=express();
 //ejs
 app.set("view engine", "ejs");
@@ -18,6 +19,7 @@ connectToMongoDB(process.env.MONGODB_URL)
 //routes
 app.use("/", staticRoutes)
 app.use("/user",userRoutes);
+app.use(respondError);
 //server listen for requests 
 app.listen(process.env.PORT, (err)=>{
     if(!err) {console.log(`server started at ${process.env.PORT}`)};

@@ -13,6 +13,7 @@ const storage=multer.diskStorage({
 });
 
 function fileFilter(req, file, cb){
+    console.log("file:::: ", file);
     if(file.fieldname=='profilePhoto'){
          if(file.mimetype=="image/jpeg" || file.mimetype=="image/png"){
              return cb(null, true);

@@ -1,54 +1,38 @@
 const validator = require("validator");
-
+const {BadRequestError}=require("../middlewares/error.middlewares")
 function validateUser(req, res, next) {
-    console.log("from the validateUser", req.files);
     const { firstName, lastName, email, password } = req.body;
-
     // First Name
     if (!firstName || firstName.trim() === "") {
-        return res.status(400).json({
-            message: "First name is required."
-        });
+         throw new BadRequestError('first name is required');
     }
-
+    
     if (firstName.trim().length < 2 || firstName.trim().length > 50) {
-        return res.status(400).json({
-            message: "First name must be between 2 and 50 characters."
-        });
+        throw new BadRequestError('First name must be between 2 and 50 characters.');
     }
 
     if (!/^[A-Za-z]+$/.test(firstName.trim())) {
-        return res.status(400).json({
-            message: "First name should contain only letters."
-        });
+        throw new BadRequestError('First name should contain only letters.');
     }
 
     // Last Name (Optional)
     if (lastName) {
         if (lastName.trim().length < 2 || lastName.trim().length > 50) {
-            return res.status(400).json({
-                message: "Last name must be between 2 and 50 characters."
-            });
+            throw new BadRequestError('Last name must be between 2 and 50 characters.');
         }
 
         if (!/^[A-Za-z]+$/.test(lastName.trim())) {
-            return res.status(400).json({
-                message: "Last name should contain only letters."
-            });
+            throw new BadRequestError('Last name should contain only letters.');
         }
     }
 
     // Email
     if (!email || email.trim() === "") {
-        return res.status(400).json({
-            message: "Email is required."
-        });
+        throw new BadRequestError('Email is required.');
     }
 
     if (!validator.isEmail(email.trim())) {
-        return res.status(400).json({
-            message: "Please enter a valid email."
-        });
+        throw new BadRequestError('Please enter a valid email.');
     }
 
     //password validation
@@ -63,12 +47,9 @@ function validateUser(req, res, next) {
 
     const passwordRegex =/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,64}$/;
      if (!passwordRegex.test(password)) {
-         return res.status(400).json({message:
-            "Password must be 8-64 characters and include an uppercase letter, lowercase letter, number, and special character."
-    });
-}
+        throw new BadRequestError('Password must be 8-64 characters and include an uppercase letter, lowercase letter, number, and special character.');
+        }
 
- // file validation 
    
     // Normalize values before the controller uses them
     req.body.firstName = firstName.trim();
@@ -82,42 +63,45 @@ function validateUser(req, res, next) {
 
 //uploaded file validator
 function validateUploadedFiles(req, res, next) {
+    const files = req.files; // fil
+    //File exist validation
+    if(!files){
+        return next(new BadRequestError("Input the files"));
+    }
+    if(!files.profilePhoto){
+        return next(new BadRequestError("profile photo is required"));   
+    }
+    if(!files.profilePdf){
+        return next(new BadRequestError("profile pdf is required"));   
+    }
+    if(!files.profileVideo){
+        return next(new BadRequestError("profile video is required"));   
+    }
 
-    const files = req.files;
-
+    //Size Validation
     // Profile Image
-    if (files.profileImage) {
-        const profile = files.profileImage[0];
-
-        if (profile.size > 2 * 1024 * 1024) {
-            return res.status(400).json({
-                message: "Profile image must be less than 2 MB."
-            });
+    if (files.profilePhoto) {
+        const profilePhoto = files.profilePhoto[0];
+        if (profilePhoto.size > 2 * 1024 * 1024) {
+            return next(new BadRequestError('Profile image must be less than 2 MB.'))
         }
     }
 
     // Resume
-    if (files.resume) {
-        const resume = files.resume[0];
-
-        if (resume.size > 5 * 1024 * 1024) {
-            return res.status(400).json({
-                message: "Resume must be less than 5 MB."
-            });
+    if (files.profilePdf) {
+        const profilePdf = files.profilePdf[0];
+        if (profilePdf.size > 5 * 1024 * 1024) {
+            return next(new BadRequestError('Pdf must be less than 5 MB.'));
         }
     }
 
-    // Aadhaar
-    if (files.aadhaar) {
-        const aadhaar = files.aadhaar[0];
-
-        if (aadhaar.size > 3 * 1024 * 1024) {
-            return res.status(400).json({
-                message: "Aadhaar must be less than 3 MB."
-            });
+    // video
+    if (files.profileVideo) {
+        const profileVideo = files.profileVideo[0];
+        if (profileVideo.size > 3 * 1024 * 1024) {
+            return next(new BadRequestError('Video must be less than 3 MB.'));
         }
     }
-
     next();
 }
 
